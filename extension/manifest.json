@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Brave Performance Companion",
+  "version": "0.1.0",
+  "description": "Live Web Vitals readout plus YouTube codec control (force H.264 to engage hardware decode) to maximize Brave performance.",
+  "permissions": ["storage", "activeTab", "system.cpu", "system.memory"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Brave Performance"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["yt-codec.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    },
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["yt-bridge.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["vitals.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

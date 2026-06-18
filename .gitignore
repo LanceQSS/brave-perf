@@ -1,0 +1,11 @@
+# Dependencies (the CLI is zero-dependency, but just in case)
+node_modules/
+
+# Runtime artifacts created by `apply` (machine-specific, reversible state)
+apply-state.json
+Start Brave (optimized).cmd
+
+# Logs / OS cruft
+*.log
+.DS_Store
+Thumbs.db
