@@ -5,9 +5,12 @@
 (() => {
   const s = { lcp: null, cls: 0, inp: 0, fcp: null, longTasks: 0, longTaskMs: 0 };
 
+  const observers = [];
   const obs = (type, cb, extra) => {
     try {
-      new PerformanceObserver((l) => l.getEntries().forEach(cb)).observe({ type, buffered: true, ...extra });
+      const po = new PerformanceObserver((l) => l.getEntries().forEach(cb));
+      po.observe({ type, buffered: true, ...extra });
+      observers.push(po);
     } catch {
       /* entry type unsupported in this context */
     }
@@ -28,7 +31,6 @@
 
   function snapshot() {
     const nav = performance.getEntriesByType('navigation')[0] || {};
-    const mem = performance.memory || {};
     return {
       url: location.href,
       lcp: s.lcp,
@@ -39,9 +41,12 @@
       load: nav.loadEventEnd || null,
       longTasks: s.longTasks,
       longTaskMs: Math.round(s.longTaskMs),
-      jsHeapUsed: mem.usedJSHeapSize || null,
     };
   }
+
+  // Stop observing once the page is being unloaded / bfcached — the metrics have
+  // already accumulated and keeping observers alive past page end is wasted work.
+  addEventListener('pagehide', () => observers.forEach((po) => po.disconnect()), { once: true });
 
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if (msg && msg.type === 'get-vitals') {

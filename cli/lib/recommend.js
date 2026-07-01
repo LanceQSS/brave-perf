@@ -76,8 +76,11 @@ export function buildRecommendations({ config, benchmark } = {}) {
   // --- YouTube codec/decode (from benchmark) ---
   const yt = benchmark?.youtube?.youtube;
   if (yt && yt.decode) {
-    const av1Sw = yt.decode.AV1 && yt.decode.AV1.powerEfficient === false;
-    const vp9Sw = yt.decode.VP9 && yt.decode.VP9.powerEfficient === false;
+    // A codec the GPU can't decode at all reports {supported:false, powerEfficient:false};
+    // guard on `supported` so "unsupported" isn't mistaken for "software-decoded" (the
+    // popup's classifyDecode does the same — keep the two verdicts in sync).
+    const av1Sw = yt.decode.AV1 && yt.decode.AV1.supported && yt.decode.AV1.powerEfficient === false;
+    const vp9Sw = yt.decode.VP9 && yt.decode.VP9.supported && yt.decode.VP9.powerEfficient === false;
     const h264Hw = yt.decode['H.264'] && yt.decode['H.264'].powerEfficient === true;
     const playingHeavyCodec = yt.codec === 'AV1' || yt.codec === 'VP9';
     const highDrops = yt.video && yt.video.dropPct > 1;
@@ -90,7 +93,7 @@ export function buildRecommendations({ config, benchmark } = {}) {
         why: `YouTube is using ${yt.codec || 'AV1/VP9'} which decodes in SOFTWARE on this GPU (high CPU/battery${
           highDrops ? `, ${yt.video.dropPct}% dropped frames` : ''
         }). H.264 has hardware decode here.`,
-        how: 'Install the included Brave extension and toggle "Force H.264", then reload YouTube.',
+        how: 'Install the included Brave extension and toggle "Force H.264" (it reloads YouTube for you).',
         auto: 'enabled via the extension popup (reversible; caps some videos at 1080p).',
         autoApplicable: false, // applied in the browser, not via registry
       });

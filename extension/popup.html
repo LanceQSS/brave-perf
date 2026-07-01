@@ -9,7 +9,7 @@
   <body>
     <header>
       <h1>Brave Performance</h1>
-      <span class="ver">v0.1</span>
+      <span class="ver" id="ver"></span>
     </header>
 
     <section class="card">
@@ -24,17 +24,19 @@
       <div class="row"><span>CLS</span><b id="cls">…</b></div>
       <div class="row"><span>INP (max)</span><b id="inp">…</b></div>
       <div class="row"><span>TTFB</span><b id="ttfb">…</b></div>
+      <p class="hint">Snapshot at popup open — a viewer, not a live field measurement.</p>
     </section>
 
     <section class="card" id="yt-card">
       <h2>YouTube</h2>
       <div class="row"><span>Codec</span><b id="yt-codec">—</b></div>
-      <div class="row"><span>Dropped frames</span><b id="yt-drops">—</b></div>
+      <div class="row"><span>Dropped (since load)</span><b id="yt-drops">—</b></div>
+      <div class="row"><span>HW decode</span><b id="yt-hwdec">…</b></div>
       <label class="toggle">
         <input type="checkbox" id="force-h264" />
         <span>Force H.264 (engage hardware decode)</span>
       </label>
-      <p class="hint" id="yt-hint">Lowers CPU on GPUs without AV1/VP9 hardware decode. Caps some videos at 1080p; reload YouTube after toggling.</p>
+      <p class="hint" id="yt-hint">Checking this GPU's decode capability…</p>
     </section>
 
     <footer>
